@@ -14,7 +14,14 @@ export class authService {
     signUp(email: string, password: string) {
         this.token = null;
         firebase.auth().createUserWithEmailAndPassword(email, password)
-            .catch((error) => { this.messageChanged.next(error.message); })
+            .then((success)=> {
+                console.log('success: ' + success); 
+                const text = "User " + email + " successfully created";
+                this.messageChanged.next({text: text, type: 'S'});
+            })
+            .catch((error) => { 
+                this.messageChanged.next({text: error.message, type: 'E'}); 
+            })
     }
 
     signIn(email: string, password: string) {
@@ -29,7 +36,7 @@ export class authService {
             })
             .catch((error) => { 
                 console.log(error.message);
-                this.messageChanged.next(error.message);
+                this.messageChanged.next({text: error.message, type: 'E'});
             })
     }
 

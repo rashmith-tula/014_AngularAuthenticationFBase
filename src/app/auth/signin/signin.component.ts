@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { authService } from '../auth.service';
 import { NgForm } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-signin',
@@ -9,12 +10,17 @@ import { NgForm } from '@angular/forms';
 })
 
 export class SigninComponent implements OnInit, OnDestroy {
-  message: any;
+  message: { text: any, type: string } = { text: '', type: 'E' };
+  subscription: Subscription;
+
   constructor(private auth: authService) { }
 
   ngOnInit() {
-    this.auth.messageChanged
-      .subscribe((message)=> { this.message = message; })
+    this.subscription = this.auth.messageChanged
+      .subscribe((message) => {
+        this.message.text = message['text'];
+        this.message.type = message['type'];
+      });
   }
 
   onSignin(form: NgForm) {
@@ -24,7 +30,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.auth.messageChanged.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
 }
